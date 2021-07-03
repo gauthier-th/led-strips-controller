@@ -1,35 +1,32 @@
 #include "webserver.h"
 
-WebServer::WebServer(const int _port, const char* ssid, const char* password, Controller* _controller): port(_port), controller(_controller)
-{
-	this->server = new ESP8266WebServer(_port);
+WebServer::WebServer(const int _port, const char* _ssid, const char* _password, Controller* _controller): port(_port), ssid(_ssid), password(_password), controller(_controller), server(AsyncWebServer(_port))
+{}
+
+void notFound(AsyncWebServerRequest *request) {
+	request->send(404, "text/plain", "Page not found");
 }
 
-void WebServer::start()
-{
+void WebServer::start() {
 	WiFi.mode(WIFI_STA);
 	WiFi.begin(this->ssid, this->password);
 	if (WiFi.waitForConnectResult() != WL_CONNECTED) {
-		Serial.println("WiFi Connect Failed! Rebooting...");
-		delay(1000);
-		ESP.restart();
+		Serial.printf("WiFi Failed!\n");
+		return;
 	}
-	ArduinoOTA.begin();
 
-	this->server->on("/", [this]() {
-		Serial.print("GET /");
-		server->send(200, "application/json", "{\"code\":0,\"error\":null}");
+	this->server.on("/", HTTP_GET, [](AsyncWebServerRequest *request) {
+		request->send(200, "text/plain", "Hello, world");
 	});
-	this->server->begin();
+
+	this->server.onNotFound(notFound);
+
+	this->server.begin();
+
+	Serial.print("API working on ");
+	Serial.println(this->getHost());
 }
 
-void WebServer::loop()
-{
-	ArduinoOTA.handle();
-	this->server->handleClient();
-}
-
-const String WebServer::getHost()
-{
+const String WebServer::getHost() {
 	return WiFi.localIP().toString();
 }
