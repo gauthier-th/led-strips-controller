@@ -1,4 +1,4 @@
-#include <stdlib.h>
+#pragma once
 #include <ESP8266WiFi.h>
 #include <ESPAsyncTCP.h>
 #include <ESPAsyncWebServer.h>

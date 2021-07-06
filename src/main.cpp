@@ -13,10 +13,13 @@ Controller* controller;
 
 void setup() {
 	Serial.begin(115200);
+	while (!Serial) {}
+	Serial.println("Starting...");
 
 	controller = new Controller;
-	server = new WebServer(80, ssid, password, controller);
+	controller->init();
 
+	server = new WebServer(80, ssid, password, controller);
 	server->start();
 }
 
