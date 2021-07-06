@@ -2,6 +2,7 @@
 // #include <SPIFFS.h>
 #include "webserver.h"
 #include "controller.h"
+#include "store.h"
 
 #include "config.h"
 
@@ -15,6 +16,8 @@ void setup() {
 	Serial.begin(115200);
 	while (!Serial) {}
 	Serial.println("Starting...");
+
+	Store::init();
 
 	controller = new Controller;
 	controller->init();
