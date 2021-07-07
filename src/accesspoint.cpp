@@ -21,7 +21,7 @@ void AccessPoint::init() {
 	this->server->on("/", HTTP_GET, [](AsyncWebServerRequest *request) {
 		request->send(LittleFS, "/access_point.html", "text/html");
 	});
-	AsyncCallbackJsonWebHandler* handler = new AsyncCallbackJsonWebHandler("/creditentials", [&](AsyncWebServerRequest *request, JsonVariant &json) {
+	server->addHandler(new AsyncCallbackJsonWebHandler("/creditentials", [&](AsyncWebServerRequest *request, JsonVariant &json) {
 		request->send(200, "application/javascript", Responses::getErrorMessage(Responses::CODES::NO_ERROR).c_str());
 		JsonObject jsonObj = json.as<JsonObject>();
 		const char* ssid = jsonObj["ssid"];
@@ -35,11 +35,7 @@ void AccessPoint::init() {
 		Serial.println("Password successfully saved");
 		delay(300);
 		ESP.restart();
-		// this->server->reset();
-		// this->server->end();
-		// this->endCallback(ssid, password);
-	});
-	server->addHandler(handler);
+	}));
 
 	this->server->onNotFound([](AsyncWebServerRequest *request) {
 		request->send(404, "application/javascript", Responses::getErrorMessage(Responses::CODES::UNKNOWN_ENDPOINT).c_str());

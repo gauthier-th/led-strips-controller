@@ -2,8 +2,9 @@
 #include <Arduino.h>
 
 std::map<int, const char*> Responses::codes = {
-	{ 0, "null" },
-	{ 1, "\"Unknown endpoint\"" }
+	{ Responses::CODES::NO_ERROR, "null" },
+	{ Responses::CODES::UNKNOWN_ENDPOINT, "\"Unknown endpoint\"" },
+	{ Responses::CODES::INVALID_BODY, "\"Invalid body\"" }
 };
 
 const char* Responses::getError(int code) {

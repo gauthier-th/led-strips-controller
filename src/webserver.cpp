@@ -3,6 +3,8 @@
 #include "responses.h"
 #include "store.h"
 #include "config.h"
+#include "AsyncJson.h"
+#include "ArduinoJson.h"
 
 WebServer::WebServer(const int _port, Controller _controller): port(_port), controller(_controller), server(new AsyncWebServer(_port))
 {
@@ -16,11 +18,17 @@ void WebServer::start() {
 	}
 
 	this->server->on("/", HTTP_GET, [](AsyncWebServerRequest *request) {
-		Serial.println("Get /");
-		Serial.println(Responses::getError(Responses::CODES::NO_ERROR));
-		Serial.println(Responses::getErrorMessage(Responses::CODES::NO_ERROR).c_str());
 		request->send(200, "application/javascript", Responses::getErrorMessage(Responses::CODES::NO_ERROR).c_str());
 	});
+	server->addHandler(new AsyncCallbackJsonWebHandler("/setLight", [&](AsyncWebServerRequest *request, JsonVariant &json) {
+		JsonObject jsonObj = json.as<JsonObject>();
+		if (jsonObj.containsKey("pin") && jsonObj.containsKey("ratio") && jsonObj["pin"].is<int>() && jsonObj["ratio"].is<int>()) {
+			this->controller.setLight((int) jsonObj["pin"], (int) jsonObj["ratio"]);
+			request->send(200, "application/javascript", Responses::getErrorMessage(Responses::CODES::NO_ERROR).c_str());
+		}
+		else
+			request->send(400, "application/javascript", Responses::getErrorMessage(Responses::CODES::INVALID_BODY).c_str());
+	}));
 
 	this->server->onNotFound([](AsyncWebServerRequest *request) {
 		request->send(404, "application/javascript", Responses::getErrorMessage(Responses::CODES::UNKNOWN_ENDPOINT).c_str());
