@@ -22,7 +22,7 @@ void AccessPoint::init() {
 		request->send(LittleFS, "/access_point.html", "text/html");
 	});
 	AsyncCallbackJsonWebHandler* handler = new AsyncCallbackJsonWebHandler("/creditentials", [&](AsyncWebServerRequest *request, JsonVariant &json) {
-		request->send(200, "application/javascript", Responses::getErrorMessage(Responses::CODES::NO_ERROR));
+		request->send(200, "application/javascript", Responses::getErrorMessage(Responses::CODES::NO_ERROR).c_str());
 		JsonObject jsonObj = json.as<JsonObject>();
 		const char* ssid = jsonObj["ssid"];
 		const char* password = jsonObj["password"];
@@ -42,7 +42,7 @@ void AccessPoint::init() {
 	server->addHandler(handler);
 
 	this->server->onNotFound([](AsyncWebServerRequest *request) {
-		request->send(404, "application/javascript", Responses::getErrorMessage(Responses::CODES::UNKNOWN_ENDPOINT));
+		request->send(404, "application/javascript", Responses::getErrorMessage(Responses::CODES::UNKNOWN_ENDPOINT).c_str());
 	});
 
 	this->server->begin();

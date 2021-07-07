@@ -16,11 +16,14 @@ void WebServer::start() {
 	}
 
 	this->server->on("/", HTTP_GET, [](AsyncWebServerRequest *request) {
-		request->send(200, "application/javascript", Responses::getErrorMessage(Responses::CODES::NO_ERROR));
+		Serial.println("Get /");
+		Serial.println(Responses::getError(Responses::CODES::NO_ERROR));
+		Serial.println(Responses::getErrorMessage(Responses::CODES::NO_ERROR).c_str());
+		request->send(200, "application/javascript", Responses::getErrorMessage(Responses::CODES::NO_ERROR).c_str());
 	});
 
 	this->server->onNotFound([](AsyncWebServerRequest *request) {
-		request->send(404, "application/javascript", Responses::getErrorMessage(Responses::CODES::UNKNOWN_ENDPOINT));
+		request->send(404, "application/javascript", Responses::getErrorMessage(Responses::CODES::UNKNOWN_ENDPOINT).c_str());
 	});
 
 	this->server->begin();

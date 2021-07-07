@@ -53,6 +53,7 @@
 		"string": "cpp",
 		"string_view": "cpp",
 		"system_error": "cpp",
-		"ranges": "cpp"
+		"ranges": "cpp",
+		"charconv": "cpp"
 	}
 }
