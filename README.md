@@ -4,7 +4,9 @@ A controller for led strips.
 
 ## Configuration
 
-Copy file `src/config.example.h` to `src/example.h` and fill you WiFi SSID and password.
+Copy file `src/config.example.h` to `src/example.h`.
+
+You can if you want update the access point SSID, the access point password and the device hostname.
 
 ## License
 

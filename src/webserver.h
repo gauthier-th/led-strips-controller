@@ -3,20 +3,22 @@
 #include <ESPAsyncTCP.h>
 #include <ESPAsyncWebServer.h>
 #include "controller.h"
+#include "accesspoint.h"
 
 class WebServer
 {
 private:
 	const int port;
-	const char* ssid;
-	const char* password;
-	Controller* controller;
-	AsyncWebServer server;
+	const char* ssid = "";
+	const char* password = "";
+	Controller controller;
+	AsyncWebServer* server;
+	boolean connect();
 public:
 	/**
 	 * Constructor
 	 */
-	WebServer(const int port, const char* ssid, const char* password, Controller* _controller);
+	WebServer(const int port, Controller _controller);
 	/**
 	 * Start the webserver
 	 */
