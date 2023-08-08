@@ -1,99 +1,42 @@
 <!DOCTYPE html>
-
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>Led Strip Controller - WiFi</title>
-	<style>
-body {
-	background: rgb(13, 197, 255);
-	background: linear-gradient(90deg, rgba(13, 197, 255, 1) 0%, rgba(63, 95, 255, 1) 47%, rgba(87, 45, 255, 1) 100%);
-	margin: 0;
-	padding: 0;
-	min-height: 100vh;
-	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	font-size: 16px;
-}
-
-* {
-	box-sizing: border-box;
-}
-
-#content {
-	background: #eee;
-	border-radius: 5px;
-	padding: 8px 12px;
-	width: 300px;
-	max-width: 90%;
-	box-shadow: 2px 2px 23px 1px rgba(0, 0, 0, 0.5);
-	text-align: center;
-}
-
-h1 {
-	font-size: 24px;
-	margin: 8px 0 0 0;
-	font-weight: normal;
-}
-h3 {
-	font-size: 18px;
-	margin-top: 12px;
-	font-weight: normal;
-}
-
-input {
-	border: 1px solid #666;
-	border-radius: 3px;
-	width: calc(100% - 24px);
-	margin: 0 12px 8px 12px;
-	padding: 4px 6px;
-	background: #fff;
-}
-input:focus {
-	outline: none;
-}
-
-button {
-	padding: 6px 12px;
-	border: none;
-	border-radius: 3px;
-	background: #258fff;
-	color: #fff;
-	transition: ease 0.3s;
-	cursor: pointer;
-}
-button:hover {
-	background: #1772ff;
-}
-	</style>
+	<title>Led Strip Controller - Connect to WiFi</title>
+	<script src="https://cdn.tailwindcss.com"></script>
 	<script>
 		function send(e) {
 			e.preventDefault();
-			if (document.getElementById('ssid').value === "")
-				return;
-			fetch('/creditentials', {
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json'
-				},
-				body: JSON.stringify({ ssid: document.getElementById('ssid').value, password: document.getElementById('pwd').value })
+			if (!document.getElementById("ssid").value) return;
+			fetch("/creditentials", {
+				method: "POST",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify({
+					ssid: document.getElementById("ssid").value,
+					password: document.getElementById("pwd").value
+				})
 			})
 		}
 	</script>
+	<style type="text/tailwindcss">
+		@layer components  {
+			.input-text {
+				@apply w-72 text-left p-2 bg-white ring-1 ring-slate-900/10 hover:ring-slate-300 focus:outline-none focus:ring-2 focus:ring-sky-500 shadow-sm rounded-lg text-slate-800 placeholder:text-slate-400 mb-2;
+			}
+		}
+	</style>
 </head>
-
-<body>
-	<div id="content">
-		<h1>WiFi login</h1>
-		<h3>Enter below the WiFi creditentials:</h3>
-		<form>
-			<input id='ssid' type='text' placeholder='SSID' />
-			<br />
-			<input id='pwd' type='password' placeholder='Password (empty if no password)' />
-			<br />
-			<button onclick='send(event);'>Send</button>
+<body class="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 min-h-screen flex flex-col justify-center items-center p-1">
+	<div class="relative rounded-lg shadow-xl bg-white w-full max-w-2xl max-h-full flex flex-col justify-center items-center py-6 px-4">
+		<h1 class="text-3xl text-center ">LED Strip Controller</h1>
+		<h3 class="text-xl mt-3 text-center">Enter below the WiFi credentials</h3>
+		<form class="flex flex-col items-center justify-center mt-2">
+			<span class="w-full text-slate-800">SSID:</span>
+			<input type="text" id="ssid" placeholder="Name of your WiFi" class="input-text" />
+			<span class="w-full text-slate-800">Password:</span>
+			<input type="password" id="pwd" placeholder="Leave empty if no password" class="input-text" />
+			<button onclick="send(event);" class="mt-2 bg-sky-500 shadow text-white rounded-md text-sm border-y border-transparent py-2 font-semibold px-3 hover:bg-sky-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-300 w-24 transition-colors">Connect</button>
 		</form>
 	</div>
+	<span class="text-sm text-white text-center mt-4 w-full max-w-2xl max-h-full">Note: the LED strip controller will shutdown the access point then try to connect to the WiFi. If the connection fails, the access point will be started again. If the connection is successful, the access point will be shutdown and no longer be available.</span>
 </body>
