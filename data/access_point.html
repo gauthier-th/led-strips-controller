@@ -1,42 +1,319 @@
 <!DOCTYPE html>
-<head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>Led Strip Controller - Connect to WiFi</title>
-	<script src="https://cdn.tailwindcss.com"></script>
-	<script>
-		function send(e) {
-			e.preventDefault();
-			if (!document.getElementById("ssid").value) return;
-			fetch("/creditentials", {
-				method: "POST",
-				headers: { "Content-Type": "application/json" },
-				body: JSON.stringify({
-					ssid: document.getElementById("ssid").value,
-					password: document.getElementById("pwd").value
-				})
-			})
-		}
-	</script>
-	<style type="text/tailwindcss">
-		@layer components  {
-			.input-text {
-				@apply w-72 text-left p-2 bg-white ring-1 ring-slate-900/10 hover:ring-slate-300 focus:outline-none focus:ring-2 focus:ring-sky-500 shadow-sm rounded-lg text-slate-800 placeholder:text-slate-400 mb-2;
-			}
-		}
+	<style>
+*, ::after, ::before {
+	box-sizing: border-box;
+	border-width: 0;
+	border-style: solid;
+	border-color: #e5e7eb;
+}
+button, input, optgroup, select, textarea {
+	font-family: inherit;
+	font-feature-settings: inherit;
+	font-variation-settings: inherit;
+	font-size: 100%;
+	font-weight: inherit;
+	line-height: inherit;
+	color: inherit;
+	margin: 0;
+	margin-top: 0px;
+	padding: 0;
+}
+@media (max-width: 640px) {
+	html {
+		font-size: 90%;
+	}
+}
+html {
+	line-height: 1.5;
+	-webkit-text-size-adjust: 100%;
+	-moz-tab-size: 4;
+	tab-size: 4;
+	font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+	font-feature-settings: normal;
+	font-variation-settings: normal;
+}
+html, body {
+	margin: 0;
+	padding: 0;
+}
+body {
+	line-height: inherit;
+	background: linear-gradient(to right, #6366F1, #8B5CF6, #EC4899);
+	min-height: 100vh;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	padding: 0.25rem;
+}
+nav {
+	background: white;
+	border-radius: 0.5rem;
+	box-shadow: 0 10px 15px -3px #0000001a, 0 4px 6px -4px #0000001a;
+	max-height: 100%;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	padding: 1.5rem 1rem;
+}
+@media (min-width: 360px) {
+	nav {
+		padding: 1.5rem 3rem;
+		margin: 0 1rem;
+	}
+}
+@media (min-width: 768px) {
+	nav {
+		padding: 1.5rem 8rem;
+	}
+}
+h1 {
+	font-size: 1.875rem;
+	line-height: 2.25rem;
+	text-align: center;
+	font-weight: 600;
+}
+h2 {
+	font-size: 1.5rem;
+	line-height: 1.75rem;
+	text-align: center;
+	margin-top: 0rem;
+	font-weight: 400;
+}
+h3 {
+	font-size: 1.25rem;
+	line-height: 1.75rem;
+	text-align: center;
+	margin-top: 0rem;
+	font-weight: 400;
+}
+form {
+	margin-top: 0.5rem;
+	width: 18rem;
+	max-width: 100%;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+}
+form label {
+	width: 100%;
+	color: #1e293b;
+}
+form input {
+	width: 100%;
+	text-align: left;
+	padding: 0.5rem;
+	background: white;
+	border: 1px solid #d6e0ec;
+	border-radius: 0.375rem;
+	color: #1F2937;
+	margin-bottom: 0.5rem;
+	outline: none;
+	transition: border-color 0.1s ease-in-out, box-shadow 0.1s ease-in-out;
+}
+form input::placeholder {
+	color: #9CA3AF;
+}
+form input:hover {
+	border-color: #c8d2dd;
+}
+form input:focus {
+	border-color: #60A5FA;
+	box-shadow: 0 0 0 2px #60a5fa80;
+}
+form span {
+	color: #9CA3AF;
+	font-size: 0.875rem;
+	margin-top: -0.5rem;
+}
+button {
+	padding: 0.5rem 1rem;
+	font-weight: 600;
+	background: #0ea5e9;
+	color: white;
+	border-radius: 0.375rem;
+	transition: background 0.1s ease-in-out;
+	margin-top: 0.5rem;
+	border: none;
+	cursor: pointer;
+	-webkit-appearance: button;
+	text-transform: none;
+	margin-top: 1rem;
+}
+button:hover {
+	background: #0284c7;
+}
+aside {
+	position: fixed;
+	bottom: 0;
+	right: 0;
+	width: 100%;
+	height: 100%;
+	background-color: #000000a0;
+	display: none;
+	justify-content: center;
+	align-items: center;
+}
+aside > div {
+	background: white;
+	border-radius: 0.5rem;
+	box-shadow: 0 10px 15px -3px #0000001a, 0 4px 6px -4px #0000001a;
+	max-height: 100%;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	padding: 1.5rem 1rem;
+}
+aside span {
+	text-align: center;
+}
+svg {
+	width: 32px;
+	height: 32px;
+}
+@keyframes spin {
+	0% {
+		transform: rotate(0deg);
+	}
+	100% {
+		transform: rotate(360deg);
+	}
+}
 	</style>
 </head>
-<body class="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 min-h-screen flex flex-col justify-center items-center p-1">
-	<div class="relative rounded-lg shadow-xl bg-white w-full max-w-2xl max-h-full flex flex-col justify-center items-center py-6 px-4">
-		<h1 class="text-3xl text-center ">LED Strip Controller</h1>
-		<h3 class="text-xl mt-3 text-center">Enter below the WiFi credentials</h3>
-		<form class="flex flex-col items-center justify-center mt-2">
-			<span class="w-full text-slate-800">SSID:</span>
-			<input type="text" id="ssid" placeholder="Name of your WiFi" class="input-text" />
-			<span class="w-full text-slate-800">Password:</span>
-			<input type="password" id="pwd" placeholder="Leave empty if no password" class="input-text" />
-			<button onclick="send(event);" class="mt-2 bg-sky-500 shadow text-white rounded-md text-sm border-y border-transparent py-2 font-semibold px-3 hover:bg-sky-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-300 w-24 transition-colors">Connect</button>
+<body>
+	<nav>
+		<h1 id="header1">LED Strip Controller</h1>
+		<h3 id="header2">Enter below the WiFi credentials:</h3>
+		<form>
+			<label id="label-ssid" for="ssid">SSID:</label>
+			<input id="ssid" type="text" placeholder="Name of your WiFi" />
+			<label id="label-pwd" for="pwd">Password:</label>
+			<input id="pwd" type="password" placeholder="Leave empty if no password" />
+			<label id="label-number" for="number">Controller number:</label>
+			<input id="number" type="number" placeholder="Default to 1" min="1" />
+			<span id="hint-number">Use this if you have multiple controllers</span>
+			<button id="button" onclick="send(event);" >Connect</button>
 		</form>
-	</div>
-	<span class="text-sm text-white text-center mt-4 w-full max-w-2xl max-h-full">Note: the LED strip controller will shutdown the access point then try to connect to the WiFi. If the connection fails, the access point will be started again. If the connection is successful, the access point will be shutdown and no longer be available.</span>
+	</nav>
+	<aside id="modal-pending">
+		<div>
+			<h2 id="header-pending">Attempting to connect...</h2>
+			<span id="desc-pending">Please wait, the LED Strip Controller is trying to connect to the WiFi network.</span>
+			<div style="margin-top: 1rem;">
+				<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" style="animation: spin 1s linear infinite;"><path d="M12 22c5.421 0 10-4.579 10-10h-2c0 4.337-3.663 8-8 8s-8-3.663-8-8c0-4.336 3.663-8 8-8V2C6.579 2 2 6.58 2 12c0 5.421 4.579 10 10 10z"></path></svg>
+			</div>
+		</div>
+	</aside>
+	<aside id="modal-error" onclick="closeModals();">
+		<div>
+			<div style="display: flex; align-items: center;">
+				<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" style="fill: #f00"><path d="M11 7h2v7h-2zm0 8h2v2h-2z"></path><path d="m21.707 7.293-5-5A.996.996 0 0 0 16 2H8a.996.996 0 0 0-.707.293l-5 5A.996.996 0 0 0 2 8v8c0 .266.105.52.293.707l5 5A.996.996 0 0 0 8 22h8c.266 0 .52-.105.707-.293l5-5A.996.996 0 0 0 22 16V8a.996.996 0 0 0-.293-.707zM20 15.586 15.586 20H8.414L4 15.586V8.414L8.414 4h7.172L20 8.414v7.172z"></path></svg>
+				<h2 id="header-error" style="margin: 0 0 2px 0.5rem;">Error</h2>
+			</div>
+			<span id="desc-error" style="margin-top: 0.5rem;">
+				An error occured while connecting to the WiFi network.<br />
+				You should go in your WiFi settings and connect again to the LED Strip Controller.
+			</span>
+			<button id="button-error" onclick="closeModals();">Close</button>
+		</div>
+	</aside>
+	<aside id="modal-success">
+		<div>
+			<h2 id="header-pending">Attempting to connect...</h2>
+			<span id="desc-pending">
+				Please wait 5-10 seconds, the LED Strip Controller is trying to connect to the WiFi network.<br />
+				If the connection fails, the LED Strip Controller will still be available as an access point in your WiFi settings.
+			</span>
+			<div style="margin-top: 1rem;">
+				<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" style="animation: spin 1s linear infinite;"><path d="M12 22c5.421 0 10-4.579 10-10h-2c0 4.337-3.663 8-8 8s-8-3.663-8-8c0-4.336 3.663-8 8-8V2C6.579 2 2 6.58 2 12c0 5.421 4.579 10 10 10z"></path></svg>
+			</div>
+		</div>
+	<script>
+const translations = {
+	"en": {
+		"title": "Led Strip Controller - Connect to WiFi",
+		"header1": "LED Strip Controller",
+		"header2": "Enter below the WiFi credentials:",
+		"label-ssid": "SSID:",
+		"placeholder-ssid": "Name of your WiFi",
+		"label-pwd": "Password:",
+		"placeholder-pwd": "Leave empty if no password",
+		"label-number": "Controller number:",
+		"placeholder-number": "Default to 1",
+		"hint-number": "Use this setting if you have multiple controllers",
+		"button": "Connect",
+		"header-pending": "Attempting to connect...",
+		"desc-pending": "Please wait 5-10 seconds, the LED Strip Controller is trying to connect to the WiFi network.<br />If the connection fails, the LED Strip Controller will still be available as an access point in your WiFi settings.",
+		"header-error": "Error",
+		"desc-error": "An error occured while connecting to the WiFi network.<br />You should go in your WiFi settings and connect again to the LED Strip Controller.",
+		"button-error": "Close"
+	},
+	"fr": {
+		"title": "Contrôleur de bande LED - Connectez-vous au WiFi",
+		"header1": "Contrôleur de bande LED",
+		"header2": "Entrez ci-dessous les informations du réseau WiFi :",
+		"label-ssid": "SSID :",
+		"placeholder-ssid": "Nom de votre WiFi",
+		"label-pwd": "Mot de passe :",
+		"placeholder-pwd": "Laissez vide si pas de mot de passe",
+		"label-number": "Numéro du contrôleur :",
+		"placeholder-number": "Par défaut à 1",
+		"hint-number": "Utilisez ce paramètre si vous avez plusieurs contrôleurs",
+		"button": "Connexion",
+		"header-pending": "Tentative de connexion...",
+		"desc-pending": "Veuillez patienter 5 à 10 secondes, le contrôleur de bande LED tente de se connecter au réseau WiFi.<br />Si la connexion échoue, le contrôleur de bande LED sera toujours disponible en tant que point d'accès dans votre paramètres WiFi.",
+		"header-error": "Erreur",
+		"desc-error": "Une erreur s'est produite lors de la connexion au réseau WiFi.<br />Vous devriez aller dans les paramètres WiFi et vous reconnecter au contrôleur de bande LED.",
+		"button-error": "Fermer"
+	}
+}
+let lang = navigator.language.split("-")[0];
+if (!translations[lang]) lang = "en";
+document.title = translations[lang].title;
+for (const key in translations[lang]) {
+	if (!translations[lang].hasOwnProperty(key)) continue;
+	if (key === "title") continue;
+	const element = translations[lang][key];
+	if (key.startsWith("placeholder-")) {
+		document.getElementById(key.replace("placeholder-", "")).placeholder = element;
+	}
+	else if (translations[lang].hasOwnProperty(key)) {
+		document.getElementById(key).innerHTML = element;
+	}
+}
+
+async function send(e) {
+	e.preventDefault();
+	if (!document.getElementById("ssid").value) return;
+	closeModals();
+	document.getElementById("modal-pending").style.display = "flex";
+	try {
+		const controllerNumber = Number(document.getElementById("number").value || 1);
+		await fetch("/creditentials", {
+			method: "POST",
+			headers: { "Content-Type": "application/json" },
+			body: JSON.stringify({
+				ssid: document.getElementById("ssid").value,
+				password: document.getElementById("pwd").value,
+				controllerNumber: isNaN(controllerNumber) ? 1 : controllerNumber
+			})
+		});
+	}
+	catch {
+		document.getElementById("modal-pending").style.display = "none";
+		document.getElementById("modal-error").style.display = "flex";
+	}
+}
+async function closeModals() {
+	document.getElementById("modal-pending").style.display = "none";
+	document.getElementById("modal-error").style.display = "none";
+}
+	</script>
 </body>

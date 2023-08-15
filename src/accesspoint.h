@@ -11,5 +11,4 @@ private:
 public:
 	AccessPoint(AsyncWebServer* server);
 	void init();
-	void stop();
 };

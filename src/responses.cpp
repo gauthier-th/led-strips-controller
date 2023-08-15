@@ -4,7 +4,8 @@
 std::map<int, const char*> Responses::codes = {
 	{ Responses::CODES::NO_ERROR, "null" },
 	{ Responses::CODES::UNKNOWN_ENDPOINT, "\"Unknown endpoint\"" },
-	{ Responses::CODES::INVALID_BODY, "\"Invalid body\"" }
+	{ Responses::CODES::INVALID_BODY, "\"Invalid body\"" },
+	{ Responses::CODES::UNKNOWN_ERROR, "\"An unknown error occured.\"" }
 };
 
 const char* Responses::getError(int code) {

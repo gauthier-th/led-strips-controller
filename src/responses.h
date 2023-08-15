@@ -10,7 +10,8 @@ public:
 	enum CODES {
 		NO_ERROR = 0,
 		UNKNOWN_ENDPOINT = 1,
-		INVALID_BODY = 2
+		INVALID_BODY = 2,
+		UNKNOWN_ERROR = 3
 	};
 
 	static const char* getError(int code);

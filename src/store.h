@@ -5,6 +5,7 @@
 constexpr struct ValuesStruct {
 	std::tuple<int, int> SSID = std::make_tuple(0, 32);
 	std::tuple<int, int> PASSWORD = std::make_tuple(32, 96);
+	std::tuple<int, int> CONTROLLER_NUMBER = std::make_tuple(96, 96);
 } StoreValues;
 
 class Store

@@ -1,6 +1,7 @@
 #include <Arduino.h>
 #include <ESP8266WiFi.h>
 #include <LittleFS.h>
+#include <ESP8266mDNS.h>
 #include "webserver.h"
 #include "controller.h"
 #include "store.h"
@@ -26,7 +27,7 @@ void setup() {
 }
 
 void loop() {
-	
+	MDNS.update();
 }
 
 void loadLittleFS() {
