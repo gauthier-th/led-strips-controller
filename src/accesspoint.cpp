@@ -1,14 +1,16 @@
 #include "accesspoint.h"
-#include "LittleFS.h"
-#include "AsyncJson.h"
-#include "ArduinoJson.h"
+#include <LittleFS.h>
+#include <AsyncJson.h>
+#include <ArduinoJson.h>
+#include <ESP8266mDNS.h>
 #include "store.h"
 #include "config.h"
 
 AccessPoint::AccessPoint(AsyncWebServer* _server): server(_server)
 {}
 
-void AccessPoint::init() {
+void AccessPoint::init()
+{
 	if (std::strcmp(AP_PSK, "") == 0)
 		WiFi.softAP(AP_SSID);
 	else
@@ -18,28 +20,37 @@ void AccessPoint::init() {
 	Serial.print("Access Point IP address: ");
 	Serial.println(IP);
 
-	this->server->on("/", HTTP_GET, [](AsyncWebServerRequest *request) {
+	if (!MDNS.begin(MDNS_HOSTNAME))
+	{
+		Serial.println("Error starting mDNS");
+	}
+	Serial.println("mDNS started");
+
+	this->server->on("/", HTTP_GET, [](AsyncWebServerRequest *request)
+	{
 		request->send(LittleFS, "/access_point.html", "text/html");
 	});
-	this->server->addHandler(new AsyncCallbackJsonWebHandler("/creditentials", [&](AsyncWebServerRequest *request, JsonVariant &json) {
+	this->server->addHandler(new AsyncCallbackJsonWebHandler("/creditentials", [&](AsyncWebServerRequest *request, JsonVariant &json)
+	{
 		request->send(200, "application/javascript", Responses::getErrorMessage(Responses::CODES::NO_ERROR).c_str());
 		JsonObject jsonObj = json.as<JsonObject>();
 		const char* ssid = jsonObj["ssid"];
 		const char* password = jsonObj["password"];
-		const int controllerNumber = jsonObj["controllerNumber"];
+		const int controller_number = jsonObj["controllerNumber"];
 		Serial.print("Receive SSID: ");
 		Serial.println(ssid);
 		Serial.print("And password: ");
 		Serial.println(password);
 		Store::writeString(ssid, Store::VALUES.SSID);
 		Store::writeString(password, Store::VALUES.PASSWORD);
-		Store::writeInt(controllerNumber, Store::VALUES.CONTROLLER_NUMBER);
+		Store::writeInt(controller_number, Store::VALUES.CONTROLLER_NUMBER);
 		Serial.println("Password successfully saved");
 		delay(300);
 		ESP.restart();
 	}));
 
-	this->server->onNotFound([](AsyncWebServerRequest *request) {
+	this->server->onNotFound([](AsyncWebServerRequest *request)
+	{
 		request->send(404, "application/javascript", Responses::getErrorMessage(Responses::CODES::UNKNOWN_ENDPOINT).c_str());
 	});
 
